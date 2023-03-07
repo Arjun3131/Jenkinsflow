@@ -7,7 +7,7 @@ pipeline {
         stage('Checkout'){
            steps {
                 git credentialsId: '', 
-                url: '',
+                url: 'https://github.com/Arjun3131/Jenkinsflow.git',
                 branch: 'main'
            }
         }
@@ -37,7 +37,7 @@ pipeline {
         stage('Checkout K8S manifest SCM'){
             steps {
                 git credentialsId: , 
-                url: '',
+                url: 'https://github.com/Arjun3131/Jenkinsflow.git',
                 branch: 'main'
             }
         }
@@ -45,7 +45,7 @@ pipeline {
         stage('Update K8S manifest){
             steps {
                 script{
-                    withCredentials([usernamePassword(credentialsId: ', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                    withCredentials() {
                         sh '''
                         cat deploy.yaml
                                                
