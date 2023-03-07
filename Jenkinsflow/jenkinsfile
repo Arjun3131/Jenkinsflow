@@ -1,0 +1,11 @@
+Pipiline{
+   agent{
+        label 'Any'
+   }
+   stages{
+      stage{
+        git clone
+      }
+     }
+}
+
