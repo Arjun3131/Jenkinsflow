@@ -1,11 +1,57 @@
-Pipiline{
-   agent{
-        label 'Any'
-   }
-   stages{
-      stage{
-        git clone
-      }
-     }
-}
+pipeline {
+    
+    agent any 
+    
+    stages {
+        
+        stage('Checkout'){
+           steps {
+                git credentialsId: '', 
+                url: '',
+                branch: 'main'
+           }
+        }
 
+        stage('Build Docker'){
+            steps{
+                script{
+                    sh '''
+                    echo 'Buid Docker Image'
+                    docker build -t  .
+                    '''
+                }
+            }
+        }
+
+        stage('Push the artifacts'){
+           steps{
+                script{
+                    sh '''
+                    echo 'Push to Repo'
+                    docker push 
+                    '''
+                }
+            }
+        }
+        
+        stage('Checkout K8S manifest SCM'){
+            steps {
+                git credentialsId: , 
+                url: '',
+                branch: 'main'
+            }
+        }
+        
+        stage('Update K8S manifest){
+            steps {
+                script{
+                    withCredentials([usernamePassword(credentialsId: ', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                        sh '''
+                        cat deploy.yaml
+                                               
+                    }
+                }
+            }
+        }
+    }
+}
