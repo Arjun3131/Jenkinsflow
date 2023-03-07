@@ -4,7 +4,7 @@ pipeline {
     
     stages {
         
-        stage('Checkout'){
+        stage('SCM Checkout'){
            steps {
                 git credentialsId: '', 
                 url: 'https://github.com/Arjun3131/Jenkinsflow.git',
@@ -12,46 +12,34 @@ pipeline {
            }
         }
 
-        stage('Build Docker'){
+        stage('Build'){
             steps{
                 script{
                     sh '''
-                    echo 'Buid Docker Image'
-                    docker build -t  .
+                    echo 'building with maven'
+                    mvn clean install
                     '''
                 }
             }
         }
-
-        stage('Push the artifacts'){
+        stage('Test') {
+            steps {
+                withsonarQubeEnv(){
+                sh 'mvn sonar:sonar'
+                }
+            }
+            post {
+                always {
+                    junit 'target/*.xml'
+                }
+            }
+        }
+      
+          stage('Build Docker image and push'){
            steps{
-                script{
-                    sh '''
-                    echo 'Push to Repo'
-                    docker push 
-                    '''
-                }
-            }
-        }
-        
-        stage('Checkout K8S manifest SCM'){
-            steps {
-                git credentialsId: , 
-                url: 'https://github.com/Arjun3131/Jenkinsflow.git',
-                branch: 'main'
-            }
-        }
-        
-        stage('Update K8S manifest){
-            steps {
-                script{
-                    withCredentials() {
-                        sh '''
-                        cat deploy.yaml
-                                               
-                    }
-                }
-            }
+               withCredentials([])
+               sh docker build -t images:$BUILDNUM .
+               sh docker push $BUILDimage:$BUILDNUM
         }
     }
 }
